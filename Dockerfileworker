@@ -1,0 +1,43 @@
+FROM node:14
+
+EXPOSE 3000
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+VOLUME /usr/src/app
+
+# Copy package.json and yarn.lock to install dependencies
+COPY yarn/*.json ./
+COPY yarn/yarn.lock ./
+COPY yarn/*.ts ./
+
+COPY storefront-angular-starter-0.1.25/*.json ./
+COPY storefront-angular-starter-0.1.25/yarn.lock ./
+COPY storefront-angular-starter-0.1.25/*.ts ./
+
+COPY storefront-angular-starter-0.1.25/src/*.json ./
+#COPY storefront-angular-starter-0.1.25/src/yarn.lock ./
+COPY storefront-angular-starter-0.1.25/src/*.ts ./
+# Install dependencies
+RUN npm install --frozen-lockfile --production=false
+
+# Install TypeScript as a devDependency if not already present
+RUN npm list --depth=0 | grep -q 'typescript' || npm install typescript --save-dev
+
+COPY . .
+
+# RUN npm run tsc
+
+# Copy the application code
+# COPY . .
+
+# Make sure the wait-for-it.sh script has executable permissions
+RUN chmod +x /usr/src/app/wait-for-it.sh
+
+# Build the TypeScript code
+# RUN npm run build
+
+# Specify the command to run on container start
+# CMD ["npm", "start"]
+
